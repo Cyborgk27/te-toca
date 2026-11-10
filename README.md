@@ -28,6 +28,16 @@ La lista vive en `src/app/core/holidays.ts` y se puede editar sin tocar la lógi
 - Si un feriado cae en lunes o martes de turno, la app lo resalta y muestra un aviso.
 - **La rotación no se reprograma**: el feriado solo se señala. Siempre hay que confirmar con el líder técnico.
 
+## Cómo usar el `.ics`
+
+1. En la app, pulsa **Descargar .ics**. Se descarga `te-toca-rotacion.ics` con los próximos 12 meses.
+2. **Google Calendar:** Configuración → Importar y exportar → Importar → elegir el archivo → calendario “Oficina”.
+3. **Outlook:** Calendario → Agregar calendario → Cargar desde archivo (o Archivo → Abrir y exportar → Importar iCalendar en escritorio).
+4. **iPhone / iPad:** abrir el archivo → Compartir → Calendario → Agregar todo.
+5. **Android:** importar desde Google Calendar web; la app no acepta `.ics` directamente. **Mac:** Calendario → Archivo → Importar.
+
+> Es una foto de las próximas 52 semanas: no se actualiza sola. Para evitar duplicados al reimportar, usa un calendario aparte llamado **“Oficina”**.
+
 ## Desarrollo
 
 ```bash
