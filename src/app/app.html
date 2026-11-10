@@ -1,0 +1,373 @@
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="16" rx="3.5" />
+          <path d="M8 3v4M16 3v4M3 10h18" />
+          <path d="m8.8 15.2 2.1 2.1 4.4-4.4" />
+        </svg>
+      </span>
+      <span class="brand-text">
+        <strong>Te Toca</strong>
+        <small>Rotación de oficina</small>
+      </span>
+    </div>
+
+    <div class="topbar-actions">
+      <span class="topbar-hint">Lun–Mar · cada 4 semanas</span>
+      <button
+        class="icon-btn"
+        type="button"
+        (click)="toggleTheme()"
+        [attr.aria-label]="theme() === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        [attr.aria-pressed]="theme() === 'dark'"
+      >
+        @if (theme() === 'dark') {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4.2" />
+            <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.2 14.3A8.4 8.4 0 0 1 9.7 3.8 8.4 8.4 0 1 0 20.2 14.3Z" />
+          </svg>
+        }
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-main">
+        <div class="hero-topline">
+          <span class="eyebrow">Turno de oficina · lunes y martes</span>
+          <span class="hero-badges">
+            @for (badge of heroBadges(); track badge) {
+              <span class="chip chip--hero">{{ badge }}</span>
+            }
+          </span>
+        </div>
+
+        <h1 class="hero-title" id="hero-title">{{ heroTitle() }}</h1>
+        <p class="hero-sub">{{ heroSubtitle() }}</p>
+
+        <div class="hero-person">
+          <span class="avatar avatar--lg" [style.background]="heroPerson().color">{{ heroPerson().short }}</span>
+          <span class="hero-person-text">
+            <strong>{{ heroPerson().name }}</strong>
+            <small>
+              @if (heroPerson().id === rotation.meId) { Tú · }
+              {{ officeWindow() ? 'En turno esta semana' : 'Próximo en la rotación' }}
+            </small>
+          </span>
+        </div>
+
+        @if (heroHolidays().length) {
+          <div class="hero-warning" role="note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 8v5M12 17h.01" />
+              <path d="M10.3 3.9 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+            </svg>
+            <div>
+              <strong>Feriado en este turno: {{ heroHolidayText() }}</strong>
+              <span>Confirma con tu líder técnico si debes asistir.</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <aside class="hero-side" aria-label="Siguiente turno">
+        <span class="side-label">{{ officeWindow() ? 'Próximo cambio' : 'Luego sigue' }}</span>
+        <div class="side-person">
+          <span class="avatar" [style.background]="sideTurn().person.color">{{ sideTurn().person.short }}</span>
+          <span class="side-person-text">
+            <strong>{{ sideTurn().person.name }}</strong>
+            <small>{{ fmtDayLong(sideTurn().monday) }}</small>
+          </span>
+        </div>
+        <div class="side-rule"></div>
+        <div class="side-meta">
+          <span>{{ fmtRange(sideTurn().monday, sideTurn().end) }}</span>
+          <span>{{ sideTurn().holidays.length ? 'Incluye feriado' : 'Sin feriados' }}</span>
+        </div>
+        @if (sideTurn().holidays.length) {
+          <p class="side-note">Confirma con tu líder técnico.</p>
+        }
+      </aside>
+    </section>
+
+    <section class="panel calendar-panel" aria-labelledby="calendar-title">
+      <div class="panel-toolbar">
+        <div class="month-nav">
+          <button
+            class="icon-btn icon-btn--sm"
+            type="button"
+            (click)="prev()"
+            [attr.aria-label]="view() === 'year' ? 'Año anterior' : 'Mes anterior'"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <h2 id="calendar-title">{{ monthLabel() }}</h2>
+          <button
+            class="icon-btn icon-btn--sm"
+            type="button"
+            (click)="next()"
+            [attr.aria-label]="view() === 'year' ? 'Año siguiente' : 'Mes siguiente'"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+          <button class="btn btn--ghost btn--sm" type="button" (click)="goToday()">Hoy</button>
+        </div>
+
+        <div class="toolbar-actions">
+          <div class="segmented" role="group" aria-label="Vista del calendario">
+            <button
+              type="button"
+              [class.is-active]="view() === 'month'"
+              [attr.aria-pressed]="view() === 'month'"
+              (click)="setView('month')"
+            >
+              Mes
+            </button>
+            <button
+              type="button"
+              [class.is-active]="view() === 'year'"
+              [attr.aria-pressed]="view() === 'year'"
+              (click)="setView('year')"
+            >
+              Año
+            </button>
+          </div>
+
+          <button class="btn btn--brand" type="button" (click)="downloadIcs()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12M7 10l5 5 5-5" />
+              <path d="M4 20h16" />
+            </svg>
+            <span>Descargar .ics</span>
+          </button>
+        </div>
+      </div>
+
+      @if (view() === 'month') {
+        <div class="calendar" role="grid" [attr.aria-label]="'Calendario de ' + monthLabel()">
+          <div class="calendar-head" role="row">
+            @for (day of weekdays; track $index) {
+              <span role="columnheader">{{ day }}</span>
+            }
+          </div>
+
+          @for (week of monthWeeks(); track $index) {
+            <div class="calendar-week" role="row">
+              @for (day of week; track day.iso) {
+                <div
+                  class="calendar-day"
+                  role="gridcell"
+                  [class.is-out]="!day.inMonth"
+                  [class.is-today]="day.isToday"
+                  [class.is-weekend]="day.weekday >= 5"
+                  [class.is-office]="day.isOfficeDay && day.inMonth"
+                  [class.is-holiday]="day.holidays.length > 0"
+                  [style.background]="day.tint"
+                  [attr.aria-label]="day.ariaLabel"
+                  [attr.title]="day.holidayTitle || null"
+                >
+                  <span class="day-number">{{ day.day }}</span>
+                  @if (day.holidays.length) {
+                    <span class="holiday-dot" aria-hidden="true"></span>
+                  }
+                  @if (day.person; as person) {
+                    <span
+                      class="person-pill"
+                      [class.person-pill--me]="person.id === rotation.meId"
+                      [style.background]="person.color"
+                    >
+                      {{ person.short }}
+                      <span class="person-pill-name">{{ first(person) }}</span>
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="calendar-foot">
+          <div class="legend-inline">
+            @for (person of people; track person.id) {
+              <span class="legend-item">
+                <span class="dot" [style.background]="person.color" aria-hidden="true"></span>
+                {{ first(person) }}
+                @if (person.id === rotation.meId) {
+                  <span class="me-tag">Tú</span>
+                }
+              </span>
+            }
+          </div>
+          @if (monthTentative()) {
+            <span class="tentative">Fechas por confirmar</span>
+          }
+        </div>
+
+        @if (monthWarnings().length) {
+          <div class="notice notice--warn" role="note">
+            <span class="notice-icon" aria-hidden="true">!</span>
+            <div>
+              <strong>Feriado en día de turno</strong>
+              @for (warning of monthWarnings(); track $index) {
+                <p><b>{{ warning.range }}</b> · {{ warning.person }} — {{ warning.holidays }}</p>
+              }
+              <small>La rotación no cambia. Confirma con tu líder técnico si debes asistir.</small>
+            </div>
+          </div>
+        }
+
+        <div class="month-holidays">
+          <span class="month-holidays-label">Feriados del mes</span>
+          @for (holiday of monthHolidays(); track $index) {
+            <span class="holiday-chip" [class.is-pending]="!holiday.confirmed">
+              <b>{{ fmtDayShort(holiday.date) }}</b>
+              {{ holiday.name }}
+              <em>{{ kindLabel(holiday.kind) }}</em>
+              @if (!holiday.confirmed) {
+                <em>por confirmar</em>
+              }
+            </span>
+          } @empty {
+            <span class="muted">Sin feriados en este mes.</span>
+          }
+        </div>
+      } @else {
+        <div class="year-grid">
+          @for (month of yearMonths(); track month.month) {
+            <button
+              class="mini-month"
+              type="button"
+              (click)="openMonth(month.month)"
+              [attr.aria-label]="'Ver ' + month.name"
+            >
+              <span class="mini-title">{{ month.name }}</span>
+              <span class="mini-weekdays" aria-hidden="true">
+                @for (day of weekdays; track $index) {
+                  <i>{{ day }}</i>
+                }
+              </span>
+              <span class="mini-grid" aria-hidden="true">
+                @for (week of month.weeks; track $index) {
+                  @for (day of week; track day.iso) {
+                    <span
+                      class="mini-day"
+                      [class.is-out]="!day.inMonth"
+                      [class.is-today]="day.isToday"
+                      [class.is-holiday]="day.holidays.length > 0"
+                      [style.background]="day.tint"
+                    >
+                      @if (day.inMonth) {
+                        {{ day.day }}
+                      }
+                    </span>
+                  }
+                }
+              </span>
+              @if (month.hasTurnHoliday) {
+                <span class="mini-flag">Feriado en turno</span>
+              }
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <div class="split">
+      <section class="panel people-panel" aria-labelledby="people-title">
+        <div class="panel-heading">
+          <h2 id="people-title">La rotación</h2>
+          <span class="panel-kicker">Cada 4 semanas</span>
+        </div>
+
+        <ul class="people-list">
+          @for (entry of personOverview(); track entry.person.id) {
+            <li class="person-row">
+              <span class="avatar" [style.background]="entry.person.color">{{ entry.person.short }}</span>
+              <span class="person-info">
+                <span class="person-name">
+                  {{ entry.person.name }}
+                  @if (entry.isMe) {
+                    <span class="me-tag">Tú</span>
+                  }
+                </span>
+                <span class="person-next">{{ personNextLabel(entry.turn) }}</span>
+              </span>
+              @if (entry.turn.holidays.length) {
+                <span class="warn-dot" [attr.title]="'Incluye feriado: ' + holidayNames(entry.turn)">!</span>
+              }
+            </li>
+          }
+        </ul>
+
+        <div class="my-turn">
+          <span class="my-turn-label">Tu próximo turno</span>
+          <strong>{{ fmtRange(myNextTurn().monday, myNextTurn().end) }}</strong>
+          <small>{{ fmtDayLong(myNextTurn().monday) }} · {{ turnStatus(myNextTurn()) }}</small>
+        </div>
+
+        <p class="people-foot">Lunes y martes en la oficina. La rotación vuelve a empezar cada 4 semanas.</p>
+      </section>
+
+      <section class="panel upcoming-panel" aria-labelledby="upcoming-title">
+        <div class="panel-heading">
+          <h2 id="upcoming-title">Próximos turnos</h2>
+          <button class="btn btn--ghost btn--sm" type="button" (click)="downloadIcs()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12M7 10l5 5 5-5" />
+              <path d="M4 20h16" />
+            </svg>
+            .ics
+          </button>
+        </div>
+
+        <ol class="turn-list">
+          @for (turn of upcoming(); track turn.monday) {
+            <li class="turn-row" [class.is-current]="isCurrentTurn(turn)">
+              <span class="turn-index">{{ $index + 1 }}</span>
+              <span class="turn-date">
+                <b>{{ fmtRange(turn.monday, turn.end) }}</b>
+                <small>{{ fmtDayLong(turn.monday) }}</small>
+              </span>
+              <span class="turn-person">
+                <span class="avatar avatar--sm" [style.background]="turn.person.color">{{ turn.person.short }}</span>
+                {{ first(turn.person) }}
+              </span>
+              @if (turn.holidays.length) {
+                <span class="chip chip--warn" [attr.title]="holidayNames(turn)">Feriado</span>
+              }
+              <span class="turn-when">{{ turnStatus(turn) }}</span>
+            </li>
+          }
+        </ol>
+      </section>
+    </div>
+
+    <section class="disclaimer" aria-labelledby="disclaimer-title">
+      <span class="disclaimer-icon" aria-hidden="true">i</span>
+      <div>
+        <strong id="disclaimer-title">Calendario referencial</strong>
+        <p>
+          Los feriados, las jornadas suspendidas y las condiciones de asistencia pueden variar por
+          disposiciones internas del banco. Antes de asistir, corrobora con tu líder técnico. Si un
+          feriado cae en tu turno, la app solo lo señala: no reprograma la rotación.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Te Toca · mi loco, mañana te toca</span>
+    <span>No es una app oficial del banco.</span>
+  </footer>
+</div>
