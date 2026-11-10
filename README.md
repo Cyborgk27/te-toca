@@ -11,13 +11,13 @@ Incluye calendario mensual, vista anual, próximos turnos, feriados de Ecuador, 
 | Persona | Turno |
 | --- | --- |
 | Roberto Oyola | semana 1 |
-| Daniel Hinostroza | semana 2 |
+| Daniel Hinostrosa | semana 2 |
 | Bryan Vera | semana 3 |
 | Kevin Cepeda | semana 4 |
 
 - Ancla: **lunes 9 de noviembre de 2026** (turno de Daniel).
 - Cada persona vuelve a ir cada **28 días**.
-- Kevin (tú) tiene su turno marcado con la etiqueta **Tú**.
+- Cada quien puede elegir su nombre en **“¿Quién eres?”**; la selección se guarda solo en su navegador y activa la etiqueta **Tú**.
 
 ## Feriados
 
@@ -50,8 +50,9 @@ Todo lo editable está en `src/app/core/rotation.config.ts`:
 - `anchorPersonId`: persona a la que le toca ese lunes.
 - `order`: orden de la rotación.
 - `officeDayOffsets`: días de oficina (0 = lunes, 1 = martes).
-- `meId`: persona que se marca como “Tú”.
 - `PEOPLE`: nombres, iniciales y colores.
+
+La persona que está viendo la app se elige con el selector **“¿Quién eres?”** y se guarda en `localStorage` de ese navegador. No hay nada personal quemado en el código.
 
 ## Deploy en GitHub Pages
 

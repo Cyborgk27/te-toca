@@ -67,6 +67,15 @@ function readInitialTheme(): Theme {
   return document.documentElement.dataset['theme'] === 'dark' ? 'dark' : 'light';
 }
 
+function readStoredMe(): string | null {
+  try {
+    const stored = localStorage.getItem('te-toca-me');
+    return stored && PEOPLE.some((person) => person.id === stored) ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
 @Component({
   selector: 'app-root',
   imports: [],
@@ -83,6 +92,7 @@ export class App {
 
   protected readonly today = signal(this.initialToday);
   protected readonly theme = signal<Theme>(readInitialTheme());
+  protected readonly meId = signal<string | null>(readStoredMe());
   protected readonly view = signal<ViewMode>('month');
   protected readonly cursor = signal({
     year: isoParts(this.initialToday).year,
@@ -183,13 +193,14 @@ export class App {
     PEOPLE.map((person) => ({
       person,
       turn: nextTurnForPerson(person.id, this.today()),
-      isMe: person.id === ROTATION.meId,
+      isMe: person.id === this.meId(),
     })),
   );
 
-  protected readonly myNextTurn = computed(() =>
-    nextTurnForPerson(ROTATION.meId, this.today()),
-  );
+  protected readonly myNextTurn = computed<Turn | null>(() => {
+    const meId = this.meId();
+    return meId ? nextTurnForPerson(meId, this.today()) : null;
+  });
 
   constructor() {
     this.applyTheme(this.theme());
@@ -245,6 +256,25 @@ export class App {
     const next: Theme = this.theme() === 'dark' ? 'light' : 'dark';
     this.theme.set(next);
     this.applyTheme(next);
+  }
+
+  protected onMeChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    this.setMe(value || null);
+  }
+
+  protected setMe(id: string | null): void {
+    this.meId.set(id);
+
+    try {
+      if (id) {
+        localStorage.setItem('te-toca-me', id);
+      } else {
+        localStorage.removeItem('te-toca-me');
+      }
+    } catch {
+      // localStorage puede estar bloqueado; la selección funciona igual en memoria.
+    }
   }
 
   protected isCurrentTurn(turn: Turn): boolean {

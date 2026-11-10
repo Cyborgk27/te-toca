@@ -1033,6 +1033,56 @@ a:focus-visible {
   list-style: none;
 }
 
+.me-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+.me-picker-label {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.me-select {
+  flex: 1;
+  min-width: 120px;
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.me-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.me-select:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.me-picker-note {
+  color: var(--muted);
+  font-size: 0.61rem;
+  white-space: nowrap;
+}
+
 .person-row {
   display: flex;
   align-items: center;
@@ -1412,6 +1462,10 @@ a:focus-visible {
 
   .calendar {
     padding: 4px;
+  }
+
+  .me-picker-note {
+    display: none;
   }
 
   .calendar-day {

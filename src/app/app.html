@@ -57,7 +57,7 @@
           <span class="hero-person-text">
             <strong>{{ heroPerson().name }}</strong>
             <small>
-              @if (heroPerson().id === rotation.meId) { Tú · }
+              @if (heroPerson().id === meId()) { Tú · }
               {{ officeWindow() ? 'En turno esta semana' : 'Próximo en la rotación' }}
             </small>
           </span>
@@ -184,7 +184,7 @@
                   @if (day.person; as person) {
                     <span
                       class="person-pill"
-                      [class.person-pill--me]="person.id === rotation.meId"
+                      [class.person-pill--me]="person.id === meId()"
                       [style.background]="person.color"
                     >
                       {{ person.short }}
@@ -203,7 +203,7 @@
               <span class="legend-item">
                 <span class="dot" [style.background]="person.color" aria-hidden="true"></span>
                 {{ first(person) }}
-                @if (person.id === rotation.meId) {
+                @if (person.id === meId()) {
                   <span class="me-tag">Tú</span>
                 }
               </span>
@@ -290,6 +290,23 @@
           <span class="panel-kicker">Cada 4 semanas</span>
         </div>
 
+        <div class="me-picker">
+          <label class="me-picker-label" for="me-select">¿Quién eres?</label>
+          <select
+            id="me-select"
+            class="me-select"
+            (change)="onMeChange($event)"
+          >
+            <option value="" [selected]="!meId()">Sin seleccionar</option>
+            @for (person of people; track person.id) {
+              <option [value]="person.id" [selected]="person.id === meId()">
+                {{ person.name }}
+              </option>
+            }
+          </select>
+          <small class="me-picker-note">solo este navegador</small>
+        </div>
+
         <ul class="people-list">
           @for (entry of personOverview(); track entry.person.id) {
             <li class="person-row">
@@ -310,11 +327,13 @@
           }
         </ul>
 
-        <div class="my-turn">
-          <span class="my-turn-label">Tu próximo turno</span>
-          <strong>{{ fmtRange(myNextTurn().monday, myNextTurn().end) }}</strong>
-          <small>{{ fmtDayLong(myNextTurn().monday) }} · {{ turnStatus(myNextTurn()) }}</small>
-        </div>
+        @if (myNextTurn(); as myTurn) {
+          <div class="my-turn">
+            <span class="my-turn-label">Tu próximo turno</span>
+            <strong>{{ fmtRange(myTurn.monday, myTurn.end) }}</strong>
+            <small>{{ fmtDayLong(myTurn.monday) }} · {{ turnStatus(myTurn) }}</small>
+          </div>
+        }
 
         <p class="people-foot">Lunes y martes en la oficina. La rotación vuelve a empezar cada 4 semanas.</p>
       </section>

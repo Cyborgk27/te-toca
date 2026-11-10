@@ -16,7 +16,6 @@ export const ROTATION = {
   anchorPersonId: 'daniel',
   order: ['roberto', 'daniel', 'bryan', 'kevin'],
   officeDayOffsets: [0, 1],
-  meId: 'kevin',
   timezone: 'America/Guayaquil',
 } as const;
 
@@ -30,7 +29,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: 'daniel',
-    name: 'Daniel Hinostroza',
+    name: 'Daniel Hinostrosa',
     short: 'DH',
     color: '#C4007A',
     rgb: '196, 0, 122',
